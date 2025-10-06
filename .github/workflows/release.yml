@@ -7,6 +7,9 @@ on:
       - 'charts/**'
   workflow_dispatch:
 
+permissions:
+  contents: write  # Needed to push commits back to the repo
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -28,19 +31,21 @@ jobs:
           set -e
           cd charts/my-app
 
+          # Check for changes in the chart directory
           if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q .; then
-            echo "Changes detected in chart. Bumping version..."
+            echo "🔧 Changes detected in chart. Bumping version..."
             version=$(yq '.version' Chart.yaml)
             IFS='.' read -r major minor patch <<< "$version"
             patch=$((patch + 1))
             new_version="$major.$minor.$patch"
             yq e -i ".version = \"$new_version\"" Chart.yaml
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
+
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
             git commit -am "chore: bump chart version to $new_version"
             git push
           else
-            echo "No changes to chart. Skipping version bump."
+            echo "✅ No changes to chart. Skipping version bump."
           fi
 
       - name: Helm lint
@@ -60,7 +65,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add helm-charts/
-          git commit -m "chore: publish chart package and index [skip ci]" || echo "No changes to commit"
+          git commit -m "chore: publish chart package and index [skip ci]" || echo "ℹ️ Nothing to commit."
           git push
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
