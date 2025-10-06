@@ -54,7 +54,7 @@ jobs:
       - name: Create/update Helm repo index
         run: |
           helm repo index helm-charts --url "https://raw.githubusercontent.com/${{ github.repository }}/main/helm-charts"
-          
+
       - name: Commit and push chart artifacts
         run: |
           git config user.name "github-actions[bot]"
@@ -62,3 +62,5 @@ jobs:
           git add helm-charts/
           git commit -m "chore: publish chart package and index [skip ci]" || echo "No changes to commit"
           git push
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
