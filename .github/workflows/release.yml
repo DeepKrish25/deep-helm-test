@@ -81,12 +81,11 @@ jobs:
       - name: Helm lint
         run: helm lint charts/my-app
 
-      - name: Package chart with env-specific values
+      - name: Package chart
         run: |
           mkdir -p helm-charts
-          helm package charts/my-app \
-            --values charts/my-app/${{ env.VALUES_FILE }} \
-            -d helm-charts
+          helm package charts/my-app -d helm-charts
+
 
       - name: Create/update Helm repo index
         run: |
