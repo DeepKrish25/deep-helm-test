@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  my-app:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-10-06T10:46:09.364170911Z"
+    description: A Helm chart for Kubernetes
+    digest: a9f646f20df398c627604644b0524da24984c41e8013a60aa46ea2ec9c32c313
+    name: my-app
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/DeepKrish25/deep-helm-test/main/helm-charts/my-app-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-10-06T10:46:09.363678042Z"
