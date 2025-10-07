@@ -3,12 +3,22 @@ entries:
   my-app:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-10-06T12:30:30.514839943Z"
+    created: "2025-10-07T08:07:22.43807964Z"
+    description: A Helm chart for Kubernetes
+    digest: a05bb6d0d83cd76118c1a212d82f0260f0872b22f4b6d00938fa5a9bbf937ad0
+    name: my-app
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/DeepKrish25/deep-helm-test/stage/helm-charts/my-app-0.1.1-rc.12.tgz
+    version: 0.1.1-rc.12
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-10-07T08:07:22.43769346Z"
     description: A Helm chart for Kubernetes
     digest: 50758440ad35e4e6fc9acc997365c42194c433b50be46cc0159dc2495dfcb144
     name: my-app
     type: application
     urls:
-    - https://raw.githubusercontent.com/DeepKrish25/deep-helm-test/main/helm-charts/my-app-0.1.0.tgz
+    - https://raw.githubusercontent.com/DeepKrish25/deep-helm-test/stage/helm-charts/my-app-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-06T12:30:30.514279485Z"
+generated: "2025-10-07T08:07:22.437155198Z"
