@@ -21,7 +21,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Required to access full commit history
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
@@ -36,7 +36,7 @@ jobs:
           set -e
           cd charts/my-app
 
-          # Determine current branch and environment
+          # Determine branch/environment
           branch="${GITHUB_REF##*/}"
           echo "Current branch: $branch"
 
@@ -57,10 +57,11 @@ jobs:
             exit 1
           fi
 
-          # Export variables for later steps
+          # Export for next steps
           echo "VALUES_FILE=$values_file" >> $GITHUB_ENV
           echo "ENV=$env" >> $GITHUB_ENV
 
+          # Determine diff (fallback if first commit)
           before_commit="${{ github.event.before }}"
           if [[ "$before_commit" == "0000000000000000000000000000000000000000" ]]; then
             before_commit=$(git rev-parse HEAD~1 || echo "")
@@ -81,10 +82,14 @@ jobs:
             echo "Changes detected in chart. Bumping version..."
 
             version=$(yq '.version' Chart.yaml)
-            IFS='.' read -r major minor patch <<< "$version"
+
+            # Extract numeric version before bumping
+            numeric_version=$(echo "$version" | cut -d '-' -f 1)
+            IFS='.' read -r major minor patch <<< "$numeric_version"
             patch=$((patch + 1))
             new_version="${major}.${minor}.${patch}${suffix}"
 
+            echo "New version: $new_version"
             yq e -i ".version = \"$new_version\"" Chart.yaml
 
             git config user.name "github-actions[bot]"
