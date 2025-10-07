@@ -61,7 +61,7 @@ jobs:
           echo "VALUES_FILE=$values_file" >> $GITHUB_ENV
           echo "ENV=$env" >> $GITHUB_ENV
 
-          # Determine diff (fallback if first commit)
+          # Detect changes
           before_commit="${{ github.event.before }}"
           if [[ "$before_commit" == "0000000000000000000000000000000000000000" ]]; then
             before_commit=$(git rev-parse HEAD~1 || echo "")
@@ -82,14 +82,39 @@ jobs:
             echo "Changes detected in chart. Bumping version..."
 
             version=$(yq '.version' Chart.yaml)
+            echo "Current version: $version"
 
-            # Extract numeric version before bumping
             numeric_version=$(echo "$version" | cut -d '-' -f 1)
             IFS='.' read -r major minor patch <<< "$numeric_version"
-            patch=$((patch + 1))
-            new_version="${major}.${minor}.${patch}${suffix}"
 
+            commit_msg=$(git log -1 --pretty=%B)
+            echo "Latest commit message: $commit_msg"
+
+            # Default bump
+            bump_type="patch"
+
+            if echo "$commit_msg" | grep -q "feat!"; then
+              bump_type="major"
+            elif echo "$commit_msg" | grep -q "feat"; then
+              bump_type="minor"
+            fi
+
+            echo "Detected bump type: $bump_type"
+
+            if [[ "$bump_type" == "major" ]]; then
+              major=$((major + 1))
+              minor=0
+              patch=0
+            elif [[ "$bump_type" == "minor" ]]; then
+              minor=$((minor + 1))
+              patch=0
+            else
+              patch=$((patch + 1))
+            fi
+
+            new_version="${major}.${minor}.${patch}${suffix}"
             echo "New version: $new_version"
+
             yq e -i ".version = \"$new_version\"" Chart.yaml
 
             git config user.name "github-actions[bot]"
